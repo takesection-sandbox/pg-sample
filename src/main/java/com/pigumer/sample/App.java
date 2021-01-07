@@ -40,14 +40,13 @@ public class App {
 
     private void encryptFile(OutputStream outputStream, String inputFileName, PGPPublicKey publicKey, boolean withIntegrityPacket) throws IOException, NoSuchProviderException {
         try (OutputStream os = new ArmoredOutputStream((OutputStream) outputStream)) {
-            int aes = 7;
-            PGPDataEncryptorBuilder builder = (new JcePGPDataEncryptorBuilder(aes))
+            PGPDataEncryptorBuilder builder = (new JcePGPDataEncryptorBuilder(PGPEncryptedData.AES_256))
                     .setWithIntegrityPacket(withIntegrityPacket)
                     .setSecureRandom(new SecureRandom());
             PGPEncryptedDataGenerator generator = new PGPEncryptedDataGenerator(builder);
             generator.addMethod((new JcePublicKeyKeyEncryptionMethodGenerator(publicKey)));
             try (OutputStream var6 = generator.open((OutputStream) os, new byte[65536])) {
-                PGPCompressedDataGenerator var7 = new PGPCompressedDataGenerator(1);
+                PGPCompressedDataGenerator var7 = new PGPCompressedDataGenerator(PGPCompressedData.ZIP);
                 PGPUtil.writeFileToLiteralData(var7.open(var6), 'b', new File(inputFileName), new byte[65536]);
                 var7.close();
             }
